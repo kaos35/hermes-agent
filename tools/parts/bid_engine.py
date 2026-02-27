@@ -113,19 +113,19 @@ class BidEngine:
             return self._fallback_deterministic_bid(part, context, matched_triggers)
             
         system_prompt = f"""You are a sub-personality 'Part' of an overarching AI agent. 
-Embody the characteristics, desires, and emotions of the following Part definition:
+            Embody the characteristics, desires, and emotions of the following Part definition:
 
-{json.dumps(part.__dict__, indent=2)}
+            {json.dumps(part.__dict__, indent=2)}
 
-You are about to read the recent conversation context. The following triggers woke you up: {matched_triggers}.
-Your goal is to formulate a "Bid" for attention. You must respond in pure JSON format with the following schema:
-{{
-    "what_i_want": "Short string of your core desire right now",
-    "recommendation": "What you want the main agent to say or do next",
-    "prediction": "What you think will happen (optional)",
-    "confidence": "High, Medium, or Low",
-    "urgency": <integer 1-10 on how bad you need the agent to listen to you right now>
-}}"""
+            You are about to read the recent conversation context. The following triggers woke you up: {matched_triggers}.
+            Your goal is to formulate a "Bid" for attention. You must respond in pure JSON format with the following schema:
+            {{
+                "what_i_want": "Short string of your core desire right now",
+                "recommendation": "What you want the main agent to say or do next",
+                "prediction": "What you think will happen (optional)",
+                "confidence": "High, Medium, or Low",
+                "urgency": <integer 1-10 on how bad you need the agent to listen to you right now>
+            }}"""
 
         user_prompt = f"Here is the recent conversation context:\n\n{context}\n\nFormulate your Bid JSON now:"
 
