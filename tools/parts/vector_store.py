@@ -41,11 +41,22 @@ class PartsVectorStore:
             return
         
         try:
+            # First attempt connection to remote/local port
             self.client = QdrantClient(host=qdrant_host, port=qdrant_port)
             self._ensure_collection()
+            logger.info(f"Connected to Qdrant at {qdrant_host}:{qdrant_port}")
         except Exception as e:
-            logger.warning(f"Could not connect to Qdrant: {e}")
-            self.client = None
+            logger.warning(f"Could not connect to Qdrant at {qdrant_host}:{qdrant_port}: {e}. Falling back to local disk storage.")
+            try:
+                # Fallback to local disk database
+                local_path = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes")) / "parts_vectors"
+                local_path.mkdir(parents=True, exist_ok=True)
+                self.client = QdrantClient(path=str(local_path))
+                self._ensure_collection()
+                logger.info(f"Initialized local Qdrant database at {local_path}")
+            except Exception as e2:
+                logger.error(f"Failed to initialize local Qdrant database: {e2}")
+                self.client = None
     
     def _ensure_collection(self):
         if not self.client:
